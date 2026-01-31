@@ -1,6 +1,6 @@
 # LookThroughProfits Supabase Data Pipeline
 
-Automated stock data pipeline powering LookThroughProfits. Loads US and Canadian issuer listings, daily prices, and annual financial statements into a Supabase (Postgres) database. Uses a mix of SimFin (bulk) and Yahoo Finance for coverage, with batch inserts, progress logs, and .env-based configuration.
+Loads US daily prices, and annual financial statements into a Supabase (Postgres) database. Uses a mix of SimFin (bulk) and Yahoo Finance for coverage, with batch inserts, progress logs, and .env-based configuration.
 
 ## Features
 
