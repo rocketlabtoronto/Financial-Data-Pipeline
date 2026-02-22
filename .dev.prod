@@ -1,0 +1,16 @@
+# Production environment
+DB_HOST=your-prod-db-host
+DB_PORT=5432
+DB_NAME=your-prod-db-name
+DB_USER=your-prod-db-user
+DB_PASSWORD=your-prod-db-password
+
+SIMFIN_API_KEY=your-simfin-api-key
+
+# Optional
+SIMFIN_MARKET=us
+SIMFIN_PRICES_VARIANT=latest
+SIMFIN_INSERT_BATCH=1000
+PRICES_INSERT_BATCH=1000
+ORCH_MAX_ERRORS=3
+LOG_LEVEL=INFO

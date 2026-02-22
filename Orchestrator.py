@@ -23,11 +23,26 @@ SCRIPTS = [
     "ingestion/ingest_simfin_prices_us.py",
 ]
 
+
+def _load_environment(root: pathlib.Path) -> str:
+    app_env = str(os.getenv("APP_ENV", "")).strip().lower()
+    env_paths = []
+    if app_env:
+        env_paths.append(root / f".env.{app_env}")
+    env_paths.append(root / ".env")
+
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path, override=True)
+            return str(env_path)
+
+    load_dotenv(override=True)
+    return ".env (auto-discovery)"
+
 def _truncate_tables():
     """Truncate financials and stock_prices once at the beginning when requested.
     If TRUNCATE fails (e.g., due to FKs), falls back to DELETE.
     """
-    load_dotenv(override=True)
     log = get_logger("orchestrator")
     conn = None
     try:
@@ -68,6 +83,8 @@ def main():
     parser.parse_args()
 
     root = pathlib.Path(__file__).resolve().parent
+    loaded_env = _load_environment(root)
+    log.info("Loaded environment file: %s", loaded_env)
 
     # ALWAYS truncate financials and stock_prices at the beginning of each run
     log.info("Truncating financials and stock_prices tables before run...")

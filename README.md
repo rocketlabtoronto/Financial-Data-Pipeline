@@ -13,9 +13,19 @@ Simple US pipeline using SimFin + Postgres.
 python Orchestrator.py
 ```
 
+To select environment-specific files, set `APP_ENV` before running:
+
+```powershell
+$env:APP_ENV="dev"   # loads .env.dev (fallback: .env)
+python Orchestrator.py
+
+$env:APP_ENV="prod"  # loads .env.prod (fallback: .env)
+python Orchestrator.py
+```
+
 ## What happens when `Orchestrator.py` runs
 
-1. Connects to Postgres using `.env`
+1. Connects to Postgres using `.env.<APP_ENV>` when present (fallback `.env`)
 2. Clears `financials` and `stock_prices`
 3. Runs `ingestion/ingest_simfin_financials_api_to_postgres_us.py`
 4. Runs `ingestion/ingest_simfin_prices_us.py`
@@ -46,3 +56,9 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
+## Running in the terminal window
+$env:APP_ENV="dev"
+python Orchestrator.py
+
+$env:APP_ENV="prod"
+python Orchestrator.py

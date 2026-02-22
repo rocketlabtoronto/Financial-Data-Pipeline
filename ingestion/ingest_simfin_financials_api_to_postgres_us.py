@@ -11,13 +11,32 @@ DB connection uses: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 """
 
 import os, sys, math, io, zipfile, time, json
+import pathlib
 import psycopg2
 from psycopg2.extras import execute_values
 import pandas as pd
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+
+def load_runtime_env():
+    app_env = str(os.getenv("APP_ENV", "")).strip().lower()
+    root = pathlib.Path(__file__).resolve().parent.parent
+    env_paths = []
+    if app_env:
+        env_paths.append(root / f".env.{app_env}")
+    env_paths.append(root / ".env")
+
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path, override=True)
+            return str(env_path)
+
+    load_dotenv()
+    return ".env (auto-discovery)"
+
+
+LOADED_ENV_PATH = load_runtime_env()
 
 # Tag maps: logical tag -> list of candidate column names in SimFin CSVs.
 # Using candidates makes it robust across banks vs industrial datasets.
@@ -198,6 +217,7 @@ def load_df(conn, df: pd.DataFrame, stmt_type: str, tag_map: dict[str, list[str]
     print(f"[ingest_simfin_api] Done {stmt_type}. inserted_rows={inserted_count}")
     return inserted_count
 def main():
+    print(f"[config] loaded_env={LOADED_ENV_PATH}")
     # Connect to Postgres
     conn = psycopg2.connect(
         host=os.getenv("DB_HOST"),

@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Pipeline (dev)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/Orchestrator.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "APP_ENV": "dev"
+      }
+    },
+    {
+      "name": "Pipeline (prod)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/Orchestrator.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "APP_ENV": "prod"
+      }
+    }
+  ]
+}

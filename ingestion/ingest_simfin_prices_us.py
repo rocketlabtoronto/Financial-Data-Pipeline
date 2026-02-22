@@ -26,10 +26,28 @@ import zipfile
 import requests
 import pandas as pd
 import psycopg2
+import pathlib
 from psycopg2.extras import execute_values
 from dotenv import load_dotenv
 
-load_dotenv()
+def load_runtime_env():
+    app_env = str(os.getenv("APP_ENV", "")).strip().lower()
+    root = pathlib.Path(__file__).resolve().parent.parent
+    env_paths = []
+    if app_env:
+        env_paths.append(root / f".env.{app_env}")
+    env_paths.append(root / ".env")
+
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path, override=True)
+            return str(env_path)
+
+    load_dotenv()
+    return ".env (auto-discovery)"
+
+
+LOADED_ENV_PATH = load_runtime_env()
 
 
 def safe(v):
@@ -147,6 +165,7 @@ def pick_first(row: pd.Series, cols: list[str]):
 
 
 def main():
+    print(f"[config] loaded_env={LOADED_ENV_PATH}")
     script_name = os.path.basename(__file__)
     start_ts = time.time()
 
