@@ -1,87 +1,48 @@
-# LookThroughProfits Supabase Data Pipeline (US Only)
+# Financial Data Pipeline (US Only)
 
-Loads US daily prices and financial statements into a Supabase (Postgres) database using SimFin bulk datasets.
+Simple US pipeline using SimFin + Postgres.
 
-## Features
+## What it does
 
-- US annual financial statements via SimFin bulk into normalized `financials`
-- US daily prices via SimFin bulk into `stock_prices`
-- Insert-if-newer policy for prices (no upserts)
-- Batched inserts for performance (`execute_values`)
-- `.env`-based configuration for DB and SimFin settings
+- Loads US financial statements into `financials`
+- Loads US prices into `stock_prices`
 
-## Repository structure
-
-- `Orchestrator.py` — Runs the US pipeline end-to-end
-- `ingestion/`
-  - `ingest_simfin_financials_api_to_postgres_us.py` — US financials ingest
-  - `ingest_simfin_prices_us.py` — US prices ingest
-- `sql/`
-  - `create_tables.sql` — `financials` schema
-  - `create_tables_stockprice.sql` — `stock_prices` schema
-  - `create_tables_ingest_logs.sql` — `ingest_logs` schema
-- `utils/`
-  - `logger.py` — Logging setup
-
-## Setup
-
-1. Create a virtual environment (PowerShell):
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-2. Install dependencies:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-3. Create `.env` at repo root.
-
-Required:
-
-- `DB_HOST`
-- `DB_PORT` (default `5432`)
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `SIMFIN_API_KEY`
-
-Common optional:
-
-- `SIMFIN_MARKET` (default `us`)
-- `SIMFIN_PRICES_VARIANT` (`latest` or `daily`)
-- `SIMFIN_INSERT_BATCH` (default `5000`)
-- `PRICES_INSERT_BATCH` (default `1000`)
-- `CLEAR_STOCK_PRICES` (`true`/`false`)
-- `LOG_LEVEL`
-
-## Usage
-
-Run full US pipeline:
+## Run it
 
 ```powershell
 python Orchestrator.py
 ```
 
-Run individual steps:
+## What happens when `Orchestrator.py` runs
+
+1. Connects to Postgres using `.env`
+2. Clears `financials` and `stock_prices`
+3. Runs `ingestion/ingest_simfin_financials_api_to_postgres_us.py`
+4. Runs `ingestion/ingest_simfin_prices_us.py`
+5. Stops on critical failures and logs results
+
+## Required `.env` values
+
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+- `SIMFIN_API_KEY`
+
+## Optional `.env` values
+
+- `SIMFIN_MARKET` (default `us`)
+- `SIMFIN_PRICES_VARIANT` (`latest` or `daily`)
+- `SIMFIN_INSERT_BATCH`
+- `PRICES_INSERT_BATCH`
+- `ORCH_MAX_ERRORS` (default `3`)
+- `LOG_LEVEL`
+
+## Install
 
 ```powershell
-python ingestion/ingest_simfin_financials_api_to_postgres_us.py
-python ingestion/ingest_simfin_prices_us.py
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
-
-## Database schema
-
-Apply SQL in `sql/` before first run:
-
-- `create_tables.sql`
-- `create_tables_stockprice.sql`
-- `create_tables_ingest_logs.sql`
-
-## Notes
-
-- The orchestrator truncates `financials` and `stock_prices` at startup.
-- SimFin steps are skipped if `SIMFIN_API_KEY` is missing.
