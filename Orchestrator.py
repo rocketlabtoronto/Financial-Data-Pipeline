@@ -1,37 +1,26 @@
 #!/usr/bin/env python
-"""Orchestrator: end-to-end run for financials and prices.
+"""Orchestrator: US-only end-to-end run for financials and prices.
 
 Steps:
-1) Download official TMX symbol list (tsx_tsxv_all_symbols.csv from TMX API)
-2) Derive instrument types (ETFs, trusts, etc.) → instrument_meta table
-3) Ingest CA financials (yfinance → normalized financials table)
-4) Ingest US financials (SimFin bulk → normalized financials table)
-5) Ingest US daily prices (SimFin bulk → stock_prices)
-6) Ingest CA daily prices (yfinance → stock_prices)
-
-The orchestrator handles all dependencies automatically - just run and go!
+1) Ingest US financials (SimFin bulk → normalized financials table)
+2) Ingest US daily prices (SimFin bulk → stock_prices)
 
 Note: ALWAYS truncates financials and stock_prices tables at the start of each run
-      to ensure clean data with no duplicates.
+    to ensure clean data with no duplicates.
 """
 import os
 import subprocess
 import pathlib
 import sys
 import argparse
-import logging
 
 import psycopg2
 from dotenv import load_dotenv
 from utils.logger import get_logger
 
 SCRIPTS = [
-    "scripts/download_tsx_symbols_from_api.py",
-    "ingestion/derive_instrument_types_ca.py",
-    "ingestion/ingest_yfinance_financials_api_to_postgres_ca.py",
     "ingestion/ingest_simfin_financials_api_to_postgres_us.py",
     "ingestion/ingest_simfin_prices_us.py",
-    "ingestion/ingest_yfinance_prices_ca.py",
 ]
 
 def _truncate_tables():
@@ -76,7 +65,7 @@ def _truncate_tables():
 def main():
     log = get_logger("orchestrator")
     parser = argparse.ArgumentParser(description="Run the full LookThroughProfits data pipeline")
-    args = parser.parse_args()
+    parser.parse_args()
 
     root = pathlib.Path(__file__).resolve().parent
 

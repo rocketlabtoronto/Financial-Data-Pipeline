@@ -1,7 +1,7 @@
 create table if not exists stock_prices (
   id serial primary key,
   symbol text not null,
-  exchange text not null default 'US',  -- 'US', 'CA', etc.
+  exchange text not null default 'US',
   open numeric,
   high numeric,
   low numeric,

@@ -25,8 +25,6 @@ def setup_logging():
     if level > logging.DEBUG:
         for noisy in ("urllib3", "requests", "psycopg2"):
             logging.getLogger(noisy).setLevel(logging.WARNING)
-        # Suppress yfinance ERROR logs (delisted symbols, etc.) but keep CRITICAL
-        logging.getLogger("yfinance").setLevel(logging.CRITICAL)
     _INITIALIZED = True
 
 

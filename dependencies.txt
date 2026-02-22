@@ -1,6 +1,5 @@
 psycopg2-binary
 pandas
-yfinance
 python-dotenv
 requests
 simfin
