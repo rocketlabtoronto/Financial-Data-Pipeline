@@ -1,8 +1,8 @@
-name: Nightly Orchestrator (1:50AM EST)
+name: Nightly Orchestrator (2:03AM EST)
 
 on:
   schedule:
-    - cron: "50 6 * * *"   # 1:50 AM EST (UTC-5) year-round
+    - cron: "3 7 * * *"   # 2:03 AM EST (UTC-5) year-round
   workflow_dispatch: {}
 
 jobs:
