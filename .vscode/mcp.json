@@ -8,7 +8,7 @@
 			"args": [
 				"-y",
 				"@modelcontextprotocol/server-postgres",
-				"postgresql://postgres:cwrizzJGxzVopRn0@db.vzytznpmxesxcipiewyk.supabase.co:5432/postgres?sslmode=require"
+				"postgresql://postgres.vzytznpmxesxcipiewyk:cwrizzJGxzVopRn0@aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
 			],
 			"type": "stdio"
 		},
@@ -20,7 +20,7 @@
 			"args": [
 				"-y",
 				"@modelcontextprotocol/server-postgres",
-				"postgresql://postgres:Fr91dXr0JpbwJ48n@db.hlbkbudxumabzwsalzbz.supabase.co:5432/postgres?sslmode=require"
+				"postgresql://postgres.hlbkbudxumabzwsalzbz:Fr91dXr0JpbwJ48n@aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
 			],
 			"type": "stdio"
 		}
