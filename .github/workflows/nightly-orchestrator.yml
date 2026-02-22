@@ -1,13 +1,28 @@
-name: Nightly Orchestrator (3AM EST)
+name: Nightly Orchestrator (2:03AM EST)
 
 on:
   schedule:
-    - cron: "0 8 * * *"   # 3:00 AM EST (UTC-5) year-round
+    - cron: "3 7 * * *"   # 2:03 AM EST (UTC-5) year-round
   workflow_dispatch: {}
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    env:
+      APP_ENV: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      SIMFIN_API_KEY: ${{ secrets.SIMFIN_API_KEY }}
+      SIMFIN_MARKET: ${{ secrets.SIMFIN_MARKET }}
+      SIMFIN_PRICES_VARIANT: ${{ secrets.SIMFIN_PRICES_VARIANT }}
+      SIMFIN_INSERT_BATCH: ${{ secrets.SIMFIN_INSERT_BATCH }}
+      PRICES_INSERT_BATCH: ${{ secrets.PRICES_INSERT_BATCH }}
+      ORCH_MAX_ERRORS: ${{ secrets.ORCH_MAX_ERRORS }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -24,5 +39,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Orchestrator
-        run: |
-          python Orchestrator.py
+        run: python Orchestrator.py

@@ -88,7 +88,7 @@ def get_us_tickers_from_db(conn):
     cur.execute(
         """
         SELECT DISTINCT ticker
-        FROM financials
+        FROM dashboard.financials
         WHERE exchange = 'US'
         ORDER BY ticker
         """
@@ -104,7 +104,7 @@ def table_has_column(conn, table: str, column: str) -> bool:
         """
         SELECT 1
         FROM information_schema.columns
-        WHERE table_name = %s AND column_name = %s
+        WHERE table_schema = 'dashboard' AND table_name = %s AND column_name = %s
         """,
         (table, column),
     )
@@ -120,7 +120,7 @@ def get_existing_latest_map(conn, use_timestamp: bool):
         cur.execute(
             """
             SELECT symbol, max(as_of)
-            FROM stock_prices
+            FROM dashboard.stock_prices
             WHERE exchange = 'US'
             GROUP BY symbol
             """
@@ -129,7 +129,7 @@ def get_existing_latest_map(conn, use_timestamp: bool):
         cur.execute(
             """
             SELECT symbol, max(latest_day)
-            FROM stock_prices
+            FROM dashboard.stock_prices
             WHERE exchange = 'US'
             GROUP BY symbol
             """
@@ -181,7 +181,7 @@ def main():
 
     if os.getenv("CLEAR_STOCK_PRICES", "false").lower() == "true":
         print("[cleanup] Clearing existing stock price data...")
-        cur.execute("DELETE FROM stock_prices WHERE exchange = 'US'")
+        cur.execute("DELETE FROM dashboard.stock_prices WHERE exchange = 'US'")
         print(f"[cleanup] Deleted {cur.rowcount} existing US records")
 
     tickers = get_us_tickers_from_db(conn)
@@ -195,7 +195,7 @@ def main():
             ); cur2 = conn2.cursor()
             now = time.time()
             cur2.execute(
-                "insert into ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
+                "insert into public.ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
                 (script_name,'warning','No US tickers found in financials table', json.dumps({}), start_ts, now, int((now-start_ts)*1000))
             ); conn2.commit(); cur2.close(); conn2.close()
         except Exception:
@@ -223,7 +223,7 @@ def main():
             ); cur2 = conn2.cursor()
             now = time.time()
             cur2.execute(
-                "insert into ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
+                "insert into public.ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
                 (script_name,'error','Failed to download SimFin prices', json.dumps({"error": str(e)}), start_ts, now, int((now-start_ts)*1000))
             ); conn2.commit(); cur2.close(); conn2.close()
         except Exception:
@@ -277,13 +277,13 @@ def main():
             return
         if has_as_of and has_datetime_col:
             sql = (
-                "INSERT INTO stock_prices "
+                "INSERT INTO dashboard.stock_prices "
                 "(symbol, exchange, open, high, low, price, volume, latest_day, as_of, previous_close, change, change_percent) VALUES %s"
             )
             execute_values(cur, sql, rows_buffer, template="(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
         else:
             sql = (
-                "INSERT INTO stock_prices "
+                "INSERT INTO dashboard.stock_prices "
                 "(symbol, exchange, open, high, low, price, volume, latest_day, previous_close, change, change_percent) VALUES %s"
             )
             execute_values(cur, sql, rows_buffer, template="(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
@@ -381,7 +381,7 @@ def main():
         ); cur2 = conn2.cursor()
         now = time.time()
         cur2.execute(
-            "insert into ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
+            "insert into public.ingest_logs (script, status, message, details, started_at, ended_at, duration_ms) values (%s,%s,%s,%s,to_timestamp(%s),to_timestamp(%s),%s)",
             (script_name, status, message, json.dumps({"symbols": {"total": total, "success": successful, "errors": errors, "error_rate": round(error_rate, 6)}}), start_ts, now, int((now-start_ts)*1000))
         ); conn2.commit(); cur2.close(); conn2.close()
     except Exception:

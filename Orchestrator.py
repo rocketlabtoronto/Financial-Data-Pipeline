@@ -55,13 +55,13 @@ def _truncate_tables():
         )
         conn.autocommit = True
         cur = conn.cursor()
-        log.info("Truncating tables: financials, stock_prices …")
+        log.info("Truncating tables: dashboard.financials, dashboard.stock_prices …")
         try:
-            cur.execute("TRUNCATE TABLE financials, stock_prices")
+            cur.execute("TRUNCATE TABLE dashboard.financials, dashboard.stock_prices")
         except Exception as e:
             log.warning("TRUNCATE failed; falling back to DELETE", exc_info=e)
-            cur.execute("DELETE FROM financials")
-            cur.execute("DELETE FROM stock_prices")
+            cur.execute("DELETE FROM dashboard.financials")
+            cur.execute("DELETE FROM dashboard.stock_prices")
         finally:
             cur.close()
         log.info("Truncate completed.")
