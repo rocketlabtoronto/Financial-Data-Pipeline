@@ -8,9 +8,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     env:
-      APP_ENV: prod
+      APP_ENV: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_NAME: ${{ secrets.DB_NAME }}
