@@ -172,7 +172,7 @@ def load_df(conn, df: pd.DataFrame, stmt_type: str, tag_map: dict[str, list[str]
         if not buffer:
             return
         sql = (
-            "INSERT INTO financials "
+            "INSERT INTO dashboard.financials "
             "(ticker, exchange, fy_end_date, stmt_type, tag, value, unit, source) VALUES %s"
         )
         execute_values(cur, sql, buffer, template="(%s,%s,%s,%s,%s,%s,%s,%s)")
@@ -254,7 +254,7 @@ def main():
         cur = conn.cursor()
         cur.execute(
             """
-            insert into ingest_logs
+            insert into public.ingest_logs
             (script, status, message, details, started_at, ended_at, duration_ms)
             values (%s,%s,%s,%s, to_timestamp(%s), to_timestamp(%s), %s)
             """,
